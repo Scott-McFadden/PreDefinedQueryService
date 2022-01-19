@@ -5,6 +5,7 @@ namespace MongoDataAccess
 {
     public interface IService
     {
+        public string name { get; set; }
         public string ConnectionString { get; set; }
 
         public string CollectionName { get;  set; }
@@ -15,6 +16,6 @@ namespace MongoDataAccess
         public bool ReplaceOne (BsonDocument data);
         public bool RemoveOne (BsonDocument data);
         public BsonDocument GetById (string id);
-
+        public bool Validate();
     }
 }

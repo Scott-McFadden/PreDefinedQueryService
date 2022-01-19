@@ -1,6 +1,7 @@
 ﻿
 
 using Newtonsoft.Json;
+using System;
 
 namespace DataModels
 {
@@ -9,51 +10,64 @@ namespace DataModels
     /// </summary>
     public class ConnectionModel
     {
+
+        public object _id { get; set; }
         /// <summary>
         /// the name of the connection
         /// </summary>
-        public string Name { get; set; } = "";
+        public string name { get; set; } = "";
+
         /// <summary>
         /// a description for the connection
         /// </summary>
         public string description { get; set; } = "";
+
         /// <summary>
         /// The database engine time - mongo, sql, api, etc  
         /// a cooresponding handler needs to exist in data access execution method.
         /// </summary>
         public string engineType { get; set; } = "";
+
         /// <summary>
         /// database name
         /// </summary>
         public string dbName { get; set; } = "";
+
         /// <summary>
         /// how to connect to the data engine 
         /// </summary>
         public string connectionString { get; set; } = "";
+
         /// <summary>
         /// collection / table name  
         /// </summary>
         public string collectionName { get; set; } = "";
+
         /// <summary>
         /// list of unique key fields 
         /// </summary>
         public string[] uniqueKeys { get; set; } = { "" };
+
         /// <summary>
         /// schema for the object - used if strongly typed json objects are to be used. 
         /// </summary>
-        public string schema { get; set; } = "";
+        //public string schema { get; set; } = "";
+
         /// <summary>
         /// list of tags that help catagorize this in the list.
         /// </summary>
         public string[] tags { get; set; } = { "" };
+
         /// <summary>
         /// what is the user id
         /// </summary>
         public string UserId { get; set; } = "";
+
         /// <summary>
         /// what is the password for the given userid
         /// </summary>
         public string Password { get; set; } = "";
+
         /// <summary>
         /// how should authentication be handled
         /// - in connection
@@ -84,6 +98,22 @@ namespace DataModels
         public static string  serialize(ConnectionModel model)
         {
             return JsonConvert.SerializeObject(model, Formatting.Indented);
+        }
+
+
+        /// <summary>
+        /// verify that the model is usable
+        /// </summary>
+        /// <returns>boolean</returns>
+        public bool Validate()
+        {
+            if (string.IsNullOrEmpty(name) ||
+                 string.IsNullOrEmpty(connectionString) ||
+                 string.IsNullOrEmpty(dbName) ||
+                 string.IsNullOrEmpty(engineType) ||
+                 string.IsNullOrEmpty(connectionString)
+                ) return false;
+            return true;
         }
     }
 }

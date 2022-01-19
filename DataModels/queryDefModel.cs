@@ -86,5 +86,20 @@ namespace DataModels
         {
             return JsonConvert.SerializeObject(model, Formatting.Indented);
         }
+        /// <summary>
+        /// Validate Model
+        /// </summary>
+        /// <returns>true if valid, otherwise false</returns>
+        public bool Validate()
+        {
+            if (
+                String.IsNullOrEmpty(name) ||
+                String.IsNullOrEmpty(connection) ||
+                !( canAdd ||  canDelete || canGet || canUpdate ) // must have one
+                || fields.Count == 0 // must have at least one field defined
+                || tags.Count == 0  // must has at least on tags defined
+                ) return false;
+            return true;
+        }
     }
 }

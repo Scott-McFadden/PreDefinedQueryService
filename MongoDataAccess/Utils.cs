@@ -1,6 +1,8 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MongoDataAccess
 {
@@ -32,7 +34,20 @@ namespace MongoDataAccess
         /// <returns>json string </returns>
         public static string ToJsonString(this object x)
         {
-            return JsonConvert.SerializeObject(x);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(x);
+        }
+
+        public static string ToJson2(this object x)
+        {
+            var jsonWritersetting = new JsonWriterSettings {  OutputMode = JsonOutputMode.RelaxedExtendedJson  };
+            JObject json = JObject.Parse(x.ToJson(jsonWritersetting));
+            return json.ToString();
+        }
+
+        public static string ToJson3(this BsonDocument x)
+        {
+            var dotNetObj = BsonTypeMapper.MapToDotNetValue(x);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(dotNetObj,Formatting.Indented);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace UnitTests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            mongoService = Service.MakeConnection(connectionString, databaseName, collectionName);
+            mongoService = Service.MakeConnection("unitTest",connectionString, databaseName, collectionName);
         }
         [TestMethod]
         public void A1_OpenConnection()

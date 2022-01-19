@@ -4,25 +4,35 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq;
+using DataModels;
 
 namespace MongoDataAccess
 {
     public class Service : IService
     {
-        public string CollectionName { get;  set; }
+        public string name { get; set; }
+        public string CollectionName { get; set; }
         public MongoClientSettings Settings { get; private set; }
         public string ConnectionString { get; set; }
         public string DatabaseName { get; private set; }
         public IMongoClient Client { get; private set; }
         public IMongoDatabase Database { get; set; }
         public IMongoCollection<BsonDocument> Collection { get; private set; }
-
         public string UserName { get; set; } = "";
         public string Password { get; set; } = "";
-        public bool IsServiceReady { get;  set; } = false;
-        
+        public bool IsServiceReady { get; set; } = false;
 
 
+        public static Service MakeConnection(ConnectionModel connectionModel)
+        {
+            return Service.MakeConnection(
+                connectionModel.name, 
+                connectionModel.connectionString, 
+                connectionModel.dbName, 
+                connectionModel.collectionName, 
+                connectionModel.UserId, 
+                connectionModel.Password);
+        }
         /// <summary>
         /// builds a mongo collection service class based on the paramaters provided
         /// </summary>
@@ -32,7 +42,7 @@ namespace MongoDataAccess
         /// <param name="userName">user id = defaults to "" </param>
         /// <param name="password">password - can not be blank if userName is provided.</param>
         /// <returns>instance of the Service Class.</returns>
-        public static Service MakeConnection(string connectionString, string databaseName, string collectionName, string userName = "", string password = "")
+        public static Service MakeConnection(string Name, string connectionString, string databaseName, string collectionName, string userName = "", string password = "")
         {
             // validate 
             if (!userName.Equals(""))
@@ -48,12 +58,16 @@ namespace MongoDataAccess
             if (String.IsNullOrEmpty(databaseName))
                 throw new Exception("databaseName name must be populated");
 
+            if (String.IsNullOrEmpty(Name))
+                throw new Exception("Name cannot be empty");
+
             // create class
 
             Service ret = new Service();
-            ret.ConnectionString = connectionString + connectionString[connectionString.Length-1] == "/" ? "" : "/"; //add a closing / if it does not exist.
+            ret.ConnectionString = connectionString; // + connectionString[connectionString.Length-1] == "/" ? "" : "/"; //add a closing / if it does not exist.
             ret.DatabaseName = databaseName;
             ret.CollectionName = collectionName;
+            ret.name = Name;
 
             // build settings
 
@@ -160,6 +174,21 @@ namespace MongoDataAccess
                 ret = true;
 
             return ret;
+        }
+
+        /// <summary>
+        /// verify that the model is usable
+        /// </summary>
+        /// <returns>boolean</returns>
+        public bool Validate()
+        {
+            if (
+                String.IsNullOrEmpty(name) ||
+                String.IsNullOrEmpty(CollectionName) ||
+                String.IsNullOrEmpty(ConnectionString) ||
+                String.IsNullOrEmpty(DatabaseName))
+                return false;
+            return true;
         }
     }
 }
