@@ -5,6 +5,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq;
 using DataModels;
+using Newtonsoft.Json.Linq;
 
 namespace MongoDataAccess
 {
@@ -44,6 +45,7 @@ namespace MongoDataAccess
         /// <returns>instance of the Service Class.</returns>
         public static Service MakeConnection(string Name, string connectionString, string databaseName, string collectionName, string userName = "", string password = "")
         {
+            BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
             // validate 
             if (!userName.Equals(""))
                 if (password.Equals(""))
@@ -106,27 +108,33 @@ namespace MongoDataAccess
         {
             if (!this.IsServiceReady)
                 throw new Exception("the service has not been initialized yet.");
-
-            BsonDocument ret = Collection.Find(id.FilterById()).FirstOrDefault();
+            var criteria = "{ _id : \"" + id + "\" }";
+            BsonDocument ret = Collection.Find(criteria).FirstOrDefault();
             return ret;
         }
 
         public IList<BsonDocument> GetMany(string criteria)
         {
+
             if (!this.IsServiceReady)
                 throw new Exception("the service has not been initialized yet.");
-
-            var filter = new BsonDocument();
+              
+            List<BsonDocument> ret;
+            BsonDocument filter;
             try
             {
+                if (String.IsNullOrEmpty(criteria))
+                {
+                    criteria = "{}";
+                }
                 filter = BsonDocument.Parse(criteria);
             }
             catch (Exception ex)
             {
                 throw new Exception("The criteria is not correct", ex);
             }
-            var ret = Collection.Find(filter).ToList<BsonDocument>();
 
+            ret = Collection.Find(filter).ToList<BsonDocument>();
             return ret;
         }
 
@@ -137,13 +145,21 @@ namespace MongoDataAccess
             var filter = new BsonDocument();
             try
             {
+                if (String.IsNullOrEmpty(criteria.Replace(" ", "")))
+                {
+                    criteria = "{}";
+                }
                 filter =BsonDocument.Parse(criteria);  
             }
             catch (Exception ex)
             {
                 throw new Exception("The criteria is not correct", ex);
             }
-            var ret = Collection.Find(filter).FirstOrDefault();
+
+            BsonDocument ret = null;
+            
+                ret = Collection.Find(filter).FirstOrDefault();
+            
 
             return ret;
         }
@@ -155,6 +171,7 @@ namespace MongoDataAccess
             var ret = false;
             var filter = new BsonDocument { { "_id", ObjectId.Parse(data.GetId()) } };
             var result = Collection.DeleteOne(filter);
+             
             if (result.DeletedCount == 1)
             {
                 ret = true;
@@ -167,7 +184,7 @@ namespace MongoDataAccess
             if (!this.IsServiceReady)
                 throw new Exception("the service has not been initialized yet.");
             var ret = false;
-            var filter = new BsonDocument { { "_id", ObjectId.Parse(data.GetId()) } };
+            var filter = new BsonDocument { { "_id", new ObjectId(data.GetId()) } };
 
             var result = Collection.ReplaceOne(filter, data, new ReplaceOptions { IsUpsert = false } );
             if (result.ModifiedCount == 1)

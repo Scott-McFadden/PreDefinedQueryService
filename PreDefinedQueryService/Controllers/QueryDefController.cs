@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DomainOps;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,17 @@ namespace PreDefinedQueryService.Controllers
     [ApiController]
     public class QueryDefController : ControllerBase
     {
+        ExecuteQuery data;
+        public QueryDefController()
+        {
+            data = new(); 
+        }
         // GET: api/<QueryDefController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public string Get()
         {
-            return new string[] { "value1", "value2" };
+             
+            return data.Get("QueryDef").ToString();
         }
 
         // GET api/<QueryDefController>/5

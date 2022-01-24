@@ -49,5 +49,12 @@ namespace MongoDataAccess
             var dotNetObj = BsonTypeMapper.MapToDotNetValue(x);
             return Newtonsoft.Json.JsonConvert.SerializeObject(dotNetObj,Formatting.Indented);
         }
+
+        public static JObject ToJObject(this BsonDocument doc)
+        {
+            return JObject.Parse(doc.ToJson3());
+        }
+
+        
     }
 }

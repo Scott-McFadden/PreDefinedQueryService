@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace DataModels
     /// </summary>
     public class QueryDefModel
     {
+        [BsonId]
+        public object _id { get; set; }
         /// <summary>
         /// name of querydef
         /// </summary>
@@ -37,13 +40,17 @@ namespace DataModels
         /// </summary>
         public IList<QdefFieldModel> fields { get; set; } = new List<QdefFieldModel>() { new QdefFieldModel() };
         /// <summary>
-        /// 
+        /// Modification History
         /// </summary>
         public IList<ModificationModel> Modifications { get; set; } =  new List<ModificationModel>() { new ModificationModel() };
         /// <summary>
-        /// command / parameter for base get query
+        /// command / parameter for base get query - many
         /// </summary>
         public string getQuery   { get; set; } = "";
+        /// <summary>
+        /// command / parameter for base get query (single)
+        /// </summary>
+        public string getOneQuery { get; set; } = "";
         /// <summary>
         /// command / parameter for base DELETE query
         /// </summary>
@@ -61,10 +68,13 @@ namespace DataModels
         /// roles allowed to use this defintion
         /// </summary>
         public IList<string> roles { get; set; } = new String[] { "" };
-
+        [BsonIgnore]
         public bool canAdd { get => this.addQuery.Length > 0; }
+        [BsonIgnore]
         public bool canUpdate { get => this.updateQuery.Length > 0; }
+        [BsonIgnore]
         public bool canDelete { get => this.deleteQuery.Length > 0; }
+        [BsonIgnore]
         public bool canGet { get => this.getQuery.Length > 0; }
 
         /// <summary>
@@ -76,7 +86,6 @@ namespace DataModels
         {
             return JsonConvert.DeserializeObject<QueryDefModel>(data);
         }
-
         /// <summary>
         /// create a json string for the object.
         /// </summary>

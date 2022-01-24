@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace DataModels
 { 
@@ -7,6 +8,7 @@ namespace DataModels
     /// </summary>
     public  class QdefFieldModel
     {
+        static int depth = 0;
         /// <summary>
         /// name of field - presented to the ui / application
         /// </summary>
@@ -35,6 +37,26 @@ namespace DataModels
         /// input type the control the ui should use
         /// </summary>
         public string inputType { get; set; } =   "" ;
+
+
+        private IList<QdefFieldModel> children = null;
+        public IList<QdefFieldModel> Children { 
+            get
+            {
+                if (children == null)
+                {
+                    if (QdefFieldModel.depth < 1)    // limit depth
+                       children = new List<QdefFieldModel>() { new QdefFieldModel() };
+                    QdefFieldModel.depth++;
+                }
+                    
+                return children;
+            } 
+            set 
+            {
+                children = value;
+            } 
+        }   
 
 
         /// <summary>

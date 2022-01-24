@@ -14,12 +14,9 @@ namespace UnitTests
 
             ConnectionModel model = ConnectionModel.deserialize(data);
 
-             Assert.IsTrue(model.name == "querydefs");
+            Assert.IsTrue(model.name == "querydefs");
             Assert.IsTrue(model.uniqueKeys.Length == 1);
             Assert.IsTrue(model.connectionString == "mongodb://localhost:27017/");
-
-
-
         }
 
         [TestMethod]
